@@ -1,0 +1,12 @@
+[extend]
+
+# This brings back all the standard Gitleaks rules
+useDefault = true
+
+[[rules]]
+
+# This adds tailscale-auth-keys to the list, because for some reason this doesnt seem to catch the by default
+id = "tailscale-auth-key"
+description = "Tailscale Authentication Key"
+regex = '''tskey-auth-[a-zA-Z0-9\-]{30,}'''
+keywords = ["tskey-auth"]

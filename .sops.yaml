@@ -1,0 +1,38 @@
+keys:
+
+  # Admin Keys (Generated via age-keygen)
+  # Location: ~/.config/sops/age/keys.txt on 'dev-laptop-01'
+  - &admin-james age16zv5la93rrxwdxa9aaevhn9rl7zy27g6rxjcmv53n7hfec2zj9msw39h02
+
+  # Host Keys (Generated via ssh-to-age)
+  # Location: /etc/ssh/ssh_host_ed25519_key.pub on 'dev-laptop-01'
+  - &host-dev-laptop-01 age1skyruav68qhljxewuwa25hrzzhpvwn3umg77lkt7yg04nkququ3sxgvwyt
+
+  # Location: /etc/ssh/ssh_host_ed25519_key.pub on 'test-qemu-01'
+  - &host-test-qemu-01 age1fpnv7aja6ga4vnvzdnrqh5629s08eup2c07vqeaf7ufmkytvggxsvva6m6
+
+  # Location: /etc/ssh/ssh_host_ed25519_key.pub on 'home-server-01'
+  - &host-home-server-01 age1m60c6revq6k3vlzlynh8dut90x3r8pr3ttu3v7nac8n625wa9ehqe3c2mn
+
+  # Location: /etc/ssh/ssh_host_ed25519_key.pub on 'home-server-02'
+  - &host-home-server-02 age19djpj5yxh332ysa25j2avqwtaqg65xxt9lcadwuh3ndf0zvcce7qe04jec
+
+  # Location: /etc/ssh/ssh_host_ed25519_key.pub on 'cloud-server-01'
+  - &host-cloud-server-01 age1re60adzkspx657v7h6ekqsz8nka3ae5a6ccajx6cpujx3qn3kv3qyy92ax
+
+  # Location: /etc/ssh/ssh_host_ed25519_key.pub on 'cloud-server-03'
+  - &host-cloud-server-03 age1c8sl9ekmj2q3g6vt5z6ca6fsff6zdg7lmn4afcrrde22rh06lvjq7fn962
+
+creation_rules:
+
+  # Secrets can be decrypted by any one of the following keys
+  - path_regex: ^secrets/.*$
+    key_groups:
+      - age:
+          - *admin-james
+          - *host-dev-laptop-01
+          - *host-test-qemu-01
+          - *host-home-server-01
+          - *host-home-server-02
+          - *host-cloud-server-01
+          - *host-cloud-server-03
