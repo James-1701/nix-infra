@@ -144,27 +144,12 @@
             description = "Reset Wi-Fi PCI on suspend/resume";
             serviceConfig = {
               Type = "oneshot";
+              RemainAfterExit = true;
               ExecStart = "${wifi-pci-reset} pre";
+              ExecStop = "${wifi-pci-reset} post";
             };
             before = [ "sleep.target" ];
             wantedBy = [ "sleep.target" ];
-          };
-          pci-reset-resume = {
-            description = "Rescan Wi-Fi PCI after resume";
-            serviceConfig = {
-              Type = "oneshot";
-              ExecStart = "${wifi-pci-reset} post";
-            };
-            after = [
-              "suspend.target"
-              "hibernate.target"
-              "hybrid-sleep.target"
-            ];
-            wantedBy = [
-              "suspend.target"
-              "hibernate.target"
-              "hybrid-sleep.target"
-            ];
           };
         };
     };

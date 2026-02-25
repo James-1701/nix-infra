@@ -34,23 +34,6 @@
       }) (lib.filterAttrs (_: user: user.persistence == "default") config.internal.users);
     }
 
-    (lib.mkIf (lineage.has.usage "Nextcloud") {
-      sops.secrets.nextcloud-admin-password = {
-        owner = "nextcloud";
-        group = "nextcloud";
-      };
-    })
-
-    (lib.mkIf (lineage.has.usage "Edge Proxy") {
-      sops = {
-        secrets.CLOUDFLARE_DNS_API_TOKEN = { };
-        templates."acme-env" = {
-          content = "CLOUDFLARE_DNS_API_TOKEN=${config.sops.placeholder.CLOUDFLARE_DNS_API_TOKEN}";
-          owner = "acme";
-        };
-      };
-    })
-
     (lib.mkIf (lineage.has.usage "Desktop") {
 
       # Decrypts the wallpapers for desktops
@@ -81,6 +64,35 @@
       };
     })
 
+    (lib.mkIf (lineage.has.usage "Edge Proxy") {
+      sops = {
+        secrets.CLOUDFLARE_DNS_API_TOKEN = { };
+        templates."acme-env" = {
+          content = "CLOUDFLARE_DNS_API_TOKEN=${config.sops.placeholder.CLOUDFLARE_DNS_API_TOKEN}";
+          owner = "acme";
+        };
+      };
+    })
+
+    (lib.mkIf (lineage.has.usage "Prometheus") {
+      sops = {
+        secrets.grafana-admin-password.owner = "grafana";
+        templates."grafana-env" = {
+          content = "GRAFANA_ADMIN_PASSWORD=${config.sops.placeholder.grafana-admin-password}";
+          owner = "grafana";
+        };
+      };
+    })
+
+    (lib.mkIf (lineage.has.usage "Nextcloud") {
+      sops.secrets.nextcloud-admin-password = {
+        owner = "nextcloud";
+        group = "nextcloud";
+      };
+    })
+
+    # Currently have this disabled
+    #
     # (lib.mkIf (lineage.has.usage "OpenClaw") {
     #   sops =
     #     let

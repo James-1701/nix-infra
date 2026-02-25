@@ -38,6 +38,10 @@
     journald.console = "/dev/tty12"; # Enables journald output to the last TTY
     logrotate.enable = false; # Not needed with journald
     fwupd.enable = !(lineage.has.form "VM"); # Bare metal systems need firmware updates
+    prometheus.exporters.node = {
+      enable = true;
+      openFirewall = false;
+    };
   };
 
   # Ensures all firmware is installed

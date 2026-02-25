@@ -151,6 +151,7 @@ This infrastructure runs the following:
 - **Private mesh networking** (Tailscale)
 - **Secure remote access** (SSH)
 - **Reverse proxy and TLS termination** (Nginx)
+- **Monitoring and metrics across all systems** (Prometheus + Grafana)
 - **Self-hosted Git service** (Forgejo)
 - **File storage and collaboration platform** (Nextcloud)
 - **Workflow automation** (n8n)

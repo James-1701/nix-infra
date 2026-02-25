@@ -16,6 +16,7 @@
   # 3. System Profile
   usage = [
     "Nix Remote Builder"
+    "Prometheus"
     "Nextcloud"
     "Forgejo"
   ];

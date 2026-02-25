@@ -93,6 +93,140 @@ in
       services.traefik.enable = true;
     })
 
+    (lib.mkIf (lineage.has.usage "Prometheus") {
+      services =
+        let
+          grafana = {
+            http_port = 3001;
+            domain = "monitoring.${domain}";
+          };
+          prometheus.port = 9090;
+        in
+        {
+          # Monitors all active systems
+          prometheus = {
+            enable = true;
+            inherit (prometheus) port;
+            retentionTime = "90d";
+
+            globalConfig = {
+              scrape_interval = "5m";
+              evaluation_interval = "5m";
+            };
+
+            exporters.blackbox = {
+              enable = true;
+              openFirewall = false;
+              configFile = pkgs.writeText "blackbox.yml" ''
+                modules:
+                  http_2xx:
+                    prober: http
+                    timeout: 10s
+                    http:
+                      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                      valid_status_codes: [200, 301, 302]
+                      follow_redirects: true
+                      preferred_ip_protocol: "ip4"
+              '';
+            };
+
+            scrapeConfigs = [
+              {
+                job_name = "nodes";
+                static_configs = [
+                  {
+                    targets = [
+                      "dev-laptop-01.seagull-court.ts.net:9100"
+                      "home-server-01.seagull-court.ts.net:9100"
+                      "home-server-02.seagull-court.ts.net:9100"
+                      "cloud-server-01.seagull-court.ts.net:9100"
+                      "cloud-server-03.seagull-court.ts.net:9100"
+                    ];
+                  }
+                ];
+              }
+              {
+                job_name = "services";
+                metrics_path = "/probe";
+                params = {
+                  module = [ "http_2xx" ];
+                };
+                static_configs = [
+                  {
+                    targets = [
+                      "https://git.jameshollister.org"
+                      "https://cloud.jameshollister.org"
+                      "https://n8n.jameshollister.org"
+                    ];
+                  }
+                ];
+                relabel_configs = [
+                  {
+                    source_labels = [ "__address__" ];
+                    target_label = "__param_target";
+                  }
+                  {
+                    source_labels = [ "__param_target" ];
+                    target_label = "instance";
+                  }
+                  {
+                    target_label = "__address__";
+                    replacement = "127.0.0.1:9115";
+                  }
+                ];
+              }
+            ];
+          };
+
+          # WebUI to access prometheus
+          grafana = {
+            enable = true;
+            openFirewall = false;
+            settings = {
+              server = {
+                http_addr = "127.0.0.1";
+                inherit (grafana) domain http_port;
+              };
+              security = {
+                admin_user = "admin";
+                admin_password = "$__env{GRAFANA_ADMIN_PASSWORD}";
+              };
+            };
+
+            provision = {
+              enable = true;
+              datasources.settings.datasources = [
+                {
+                  name = "Prometheus";
+                  type = "prometheus";
+                  url = "http://localhost:${toString prometheus.port}";
+                  isDefault = true;
+                }
+              ];
+            };
+          };
+
+          # Nginx reverse proxy for Grafana
+          nginx.virtualHosts.${grafana.domain} = {
+            forceSSL = true;
+            enableACME = true;
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:${toString grafana.http_port}";
+              proxyWebsockets = true;
+            };
+          };
+        };
+
+      # Adds the grafana password the the environment variables
+      systemd.services.grafana.serviceConfig.EnvironmentFile = config.sops.templates."grafana-env".path;
+
+      # Persists the prometheus and grafana setup
+      environment.persistence."/persist".directories = [
+        "/var/lib/${config.services.prometheus.stateDir}"
+        config.services.grafana.dataDir
+      ];
+    })
+
     # Setups up Forgejo, a self-hosted git server
     (lib.mkIf (lineage.has.usage "Forgejo") {
       services =

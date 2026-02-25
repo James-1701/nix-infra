@@ -231,10 +231,11 @@
         };
         "Edge Proxy" = {
           Nginx = {
-            n8n = { };
+            Prometheus = { };
             Forgejo = { };
-            OpenClaw = { };
             Nextcloud = { };
+            OpenClaw = { };
+            n8n = { };
           };
           Caddy = { };
           Traefik = { };
