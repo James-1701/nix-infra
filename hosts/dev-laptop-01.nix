@@ -125,12 +125,9 @@
       systemd.services =
         let
           wifi-pci-reset = pkgs.writeShellScript "wifi-pci-reset" ''
-            PCI="0000:01:00.0"
-            ACTION="$1"
-
-            case "$ACTION" in
+            case "$1" in
               pre)
-                ${pkgs.coreutils}/bin/echo 1 > "/sys/bus/pci/devices/$PCI/remove"
+                ${pkgs.coreutils}/bin/echo 1 > "/sys/bus/pci/devices/0000:01:00.0/remove"
                 ;;
               post)
                 ${pkgs.coreutils}/bin/sleep 3
@@ -141,14 +138,25 @@
         in
         {
           pci-reset = {
-            description = "Reset Wi-Fi PCI on suspend/resume";
+            description = "Remove Wi-Fi PCI before suspend";
             serviceConfig = {
               Type = "oneshot";
-              RemainAfterExit = true;
               ExecStart = "${wifi-pci-reset} pre";
-              ExecStop = "${wifi-pci-reset} post";
             };
             before = [ "sleep.target" ];
+            wantedBy = [ "sleep.target" ];
+          };
+          pci-reset-resume = {
+            description = "Rescan Wi-Fi PCI after resume";
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${wifi-pci-reset} post";
+            };
+            after = [
+              "systemd-suspend.service"
+              "systemd-hibernate.service"
+              "systemd-hybrid-sleep.service"
+            ];
             wantedBy = [ "sleep.target" ];
           };
         };
