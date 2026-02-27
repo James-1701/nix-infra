@@ -153,7 +153,7 @@
         ];
         user = {
           name = "James";
-          email = "me@jamesx86.org";
+          email = "me@jameshollister.org";
         };
       };
     };
