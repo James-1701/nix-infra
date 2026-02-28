@@ -9,6 +9,17 @@
 {
   config = lib.mkIf (lineage.has.usage "Development") {
 
+    # Docker support
+    virtualisation.docker = {
+      enable = true;
+      enableOnBoot = false;
+      storageDriver = "zfs";
+      rootless = {
+        enable = true;
+        setSocketVariable = true;
+      };
+    };
+
     # Sets up direnv, which I use in almost all my projects
     programs.direnv = {
       enable = true;
