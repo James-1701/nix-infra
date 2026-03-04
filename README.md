@@ -3,7 +3,7 @@
 [![Built with Nix](https://img.shields.io/static/v1?logo=nixos&logoColor=white&label=&message=Built%20with%20Nix&color=5277C3)](https://builtwithnix.org)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-# NixOS Fleet Configuration
+# NixOS Fleet Infrastructure
 
 A comprehensive Infrastructure as Code (IaC) repository managing a heterogeneous
 fleet of NixOS systems, including development systems, cloud servers, virtual
