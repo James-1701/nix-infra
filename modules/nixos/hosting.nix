@@ -110,8 +110,8 @@ in
             retentionTime = "90d";
 
             globalConfig = {
-              scrape_interval = "5m";
-              evaluation_interval = "5m";
+              scrape_interval = "1m";
+              evaluation_interval = "1m";
             };
 
             exporters.blackbox = {
