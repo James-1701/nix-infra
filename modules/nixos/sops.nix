@@ -75,12 +75,9 @@
     })
 
     (lib.mkIf (lineage.has.usage "Prometheus") {
-      sops = {
-        secrets.grafana-admin-password.owner = "grafana";
-        templates."grafana-env" = {
-          content = "GRAFANA_ADMIN_PASSWORD=${config.sops.placeholder.grafana-admin-password}";
-          owner = "grafana";
-        };
+      sops.secrets = {
+        grafana-admin-password.owner = "grafana";
+        grafana-secret-key.owner = "grafana";
       };
     })
 

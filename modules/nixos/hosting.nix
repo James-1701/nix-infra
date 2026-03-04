@@ -189,7 +189,8 @@ in
               };
               security = {
                 admin_user = "admin";
-                admin_password = "$__env{GRAFANA_ADMIN_PASSWORD}";
+                admin_password = "$__file{${config.sops.secrets.grafana-admin-password.path}}";
+                secret_key = "$__file{${config.sops.secrets.grafana-secret-key.path}}";
               };
             };
 
@@ -216,9 +217,6 @@ in
             };
           };
         };
-
-      # Adds the grafana password the the environment variables
-      systemd.services.grafana.serviceConfig.EnvironmentFile = config.sops.templates."grafana-env".path;
 
       # Persists the prometheus and grafana setup
       environment.persistence."/persist".directories = [
@@ -289,7 +287,7 @@ in
           configureRedis = true;
           appstoreEnable = true;
           autoUpdateApps.enable = true;
-          package = pkgs.nextcloud32;
+          package = pkgs.nextcloud33;
           hostName = "cloud.${domain}";
           https = true;
           config = {
@@ -324,7 +322,7 @@ in
           };
           n8n = {
             enable = true;
-            openFirewall = true;
+            openFirewall = false;
             package = pkgs.n8n;
             environment.N8N_PORT = port;
           };

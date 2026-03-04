@@ -6,7 +6,7 @@
 
   # Flake inputs are essentially the dependencies for a flake in this case a flake that builds a NixOS system
   inputs = {
-    nixpkgs.url = "github:Nixos/nixpkgs/e45659e608efeb9f3921b0e41d0b619cdd6ffd92";
+    nixpkgs.url = "github:James-1701/nixpkgs/my-nixos";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
     lineage.url = "github:James-1701/nix-lineage";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
