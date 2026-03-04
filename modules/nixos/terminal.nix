@@ -36,7 +36,6 @@
 
       # Persist needed ZSH history and setup
       files = [
-        ".p10k.zsh"
         ".zsh_history"
       ];
 
@@ -188,7 +187,13 @@
           source ${pkgs.zsh-fast-syntax-highlighting}/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
         }
 
-        [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+        source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/config/p10k-lean.zsh
+
+        typeset -g POWERLEVEL9K_VCS_BRANCH_ICON='\uF126 '
+        typeset -g POWERLEVEL9K_ICON_PADDING=moderate
+        typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=always
+        typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon dir vcs prompt_char)
+        typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time background_jobs context nix_shell time)
 
         source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
 
