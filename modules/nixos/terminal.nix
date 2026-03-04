@@ -30,6 +30,8 @@
       HISTSIZE = 1000;
     };
 
+    etc."zellij/config.kdl".text = "show_startup_tips false";
+
     persistence."/nix/persist".users = lib.mapAttrs (_: _: {
 
       # Persist needed ZSH history and setup
@@ -101,6 +103,10 @@
       # - Powerlevel10k ZSH theme setup
       # - Deferred loading via zsh-defer to speed up shell startup
       interactiveShellInit = ''
+        if [[ -n "$SSH_CONNECTION" && -z "$ZELLIJ" ]]; then
+          exec ${pkgs.zellij}/bin/zellij attach --create main
+        fi
+
         source ${pkgs.zsh-defer}/share/zsh-defer/zsh-defer.plugin.zsh
 
         load_plugins() {
