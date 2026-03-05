@@ -65,14 +65,10 @@ in
           environmentFile = config.sops.templates."acme-env".path;
         };
 
-        certs.${domain} = {
-          domain = "*.${domain}";
-        };
+        certs.${domain}.domain = "*.${domain}";
       };
 
-      environment.persistence."/nix/persist".directories = [
-        "/var/lib/acme"
-      ];
+      environment.persistence."/nix/persist".directories = [ "/var/lib/acme" ];
     })
 
     # Caddy support
@@ -218,11 +214,8 @@ in
           };
         };
 
-      systemd.tmpfiles.rules = [
-        "d ${config.services.grafana.dataDir} 0750 grafana grafana -"
-      ];
-
-      # Persists the prometheus and grafana setup
+      # Persists the prometheus and grafana setup with proper ownership
+      systemd.tmpfiles.rules = [ "d ${config.services.grafana.dataDir} 0750 grafana grafana -" ];
       environment.persistence."/nix/persist".directories = [
         "/var/lib/${config.services.prometheus.stateDir}"
         config.services.grafana.dataDir
@@ -270,9 +263,7 @@ in
         };
 
       # Persists forgejo
-      environment.persistence."/nix/persist".directories = [
-        config.services.forgejo.stateDir
-      ];
+      environment.persistence."/nix/persist".directories = [ config.services.forgejo.stateDir ];
 
       # Ensures proper ownership for forgejo
       systemd.tmpfiles.rules = [
@@ -302,10 +293,8 @@ in
         };
       };
 
-      environment.persistence."/nix/persist".directories = [
-        config.services.nextcloud.datadir
-      ];
-
+      # Persist with proper ownership
+      environment.persistence."/nix/persist".directories = [ config.services.nextcloud.datadir ];
       systemd.tmpfiles.rules = [
         "d /nix/persist${config.services.nextcloud.datadir} 0750 nextcloud nextcloud -"
       ];
@@ -393,9 +382,7 @@ in
 
       # Persist Ollama with the proper permissions
       environment.persistence."/nix/persist".directories = [ "/var/lib/private" ];
-      systemd.tmpfiles.rules = [
-        "d /var/lib/private/ollama 0700 ollama ollama -"
-      ];
+      systemd.tmpfiles.rules = [ "d /var/lib/private/ollama 0700 ollama ollama -" ];
     })
 
     # Hosts a minecraft server
@@ -517,9 +504,7 @@ in
     # Later I am going to setup an automated service using this
     # It will wake high powered systems on demand, when low powered ones request it
     (lib.mkIf (lineage.has.usage "Wake on Lan") {
-      environment.systemPackages = [
-        pkgs.wakeonlan
-      ];
+      environment.systemPackages = [ pkgs.wakeonlan ];
     })
   ];
 }
