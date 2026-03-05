@@ -218,8 +218,12 @@ in
           };
         };
 
+      systemd.tmpfiles.rules = [
+        "d ${config.services.grafana.dataDir} 0750 grafana grafana -"
+      ];
+
       # Persists the prometheus and grafana setup
-      environment.persistence."/persist".directories = [
+      environment.persistence."/nix/persist".directories = [
         "/var/lib/${config.services.prometheus.stateDir}"
         config.services.grafana.dataDir
       ];
@@ -272,7 +276,7 @@ in
 
       # Ensures proper ownership for forgejo
       systemd.tmpfiles.rules = [
-        "d /nix/persist${config.services.forgejo.stateDir}  0750 forgejo forgejo -"
+        "d /nix/persist${config.services.forgejo.stateDir} 0750 forgejo forgejo -"
       ];
     })
 
@@ -303,7 +307,7 @@ in
       ];
 
       systemd.tmpfiles.rules = [
-        "d /nix/persist${config.services.nextcloud.datadir}  0750 nextcloud nextcloud -"
+        "d /nix/persist${config.services.nextcloud.datadir} 0750 nextcloud nextcloud -"
       ];
     })
 
@@ -387,6 +391,7 @@ in
         ];
       };
 
+      # Persist Ollama with the proper permissions
       environment.persistence."/nix/persist".directories = [ "/var/lib/private" ];
       systemd.tmpfiles.rules = [
         "d /var/lib/private/ollama 0700 ollama ollama -"
