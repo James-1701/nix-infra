@@ -14,6 +14,7 @@
 
   environment = {
     systemPackages = with pkgs; [
+      btop # A better top replacement
       zellij # A terminal workspace and multiplexer, mostly for ssh session persistence and management
       eza # A modern replacement for ls with more features and better performance
     ];
