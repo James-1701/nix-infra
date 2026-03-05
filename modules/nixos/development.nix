@@ -46,11 +46,7 @@
         # Havent figured out my favorite(s) yet
         lmstudio
 
-        plandex
-        amp-cli
-        goose-cli
-        qwen-code
-        aider-chat-full
+        opencode
         gemini-cli-bin
         github-copilot-cli
       ];
@@ -58,18 +54,20 @@
       # Persists my editors configs (I dont have VS here because I rarely use it)
       persistence."/nix/persist".users = lib.mapAttrs (_: _: {
         directories = [
-          # AIs
-          ".gemini"
-          ".lmstudio"
-
           # IDEs
-          ".config/zed/"
+          ".config/zed"
           ".local/share/zed"
           ".local/share/JetBrains"
 
           # Direnv
           ".local/share/direnv"
           ".cache/direnv"
+
+          # AI
+          ".gemini"
+          ".lmstudio"
+          ".config/opencode"
+          ".local/share/opencode"
         ];
         files = [ ".config/github-copilot/apps.json" ];
       }) (lib.filterAttrs (_: user: user.persistence == "default") config.internal.users);
