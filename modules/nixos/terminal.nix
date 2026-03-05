@@ -48,6 +48,12 @@
   };
 
   programs = {
+    # Allows adding a comma before commands to run them if they are not in the PATH
+    # Ex: `, htop`
+    nix-index-database.comma.enable = true;
+
+    # Allows running unpatched dynamic binaries on NixOS
+    nix-ld.enable = true;
 
     # Sets up Neovim as the CLI text editor
     nano.enable = false;
@@ -64,20 +70,43 @@
       };
     };
 
-    # Allows adding a comma before commands to run them if they are not in the PATH
-    # Ex: `, htop`
-    nix-index-database.comma.enable = true;
-
-    # Drop in `cd` replacement with support for remembering directories commonly entered
-    zoxide = {
+    # Sets up git
+    git = {
       enable = true;
-      flags = [ "--cmd cd" ];
+      config = {
+        push.autoSetupRemote = true;
+        init.defaultBranch = "main";
+        url."https://github.com/".insteadOf = [
+          "gh:"
+          "github:"
+        ];
+        user = {
+          name = "James";
+          email = "mail@jameshollister.org";
+        };
+      };
     };
 
     # CLI fuzzy search tool
     fzf = {
       fuzzyCompletion = true;
       keybindings = true;
+    };
+
+    # nh is a powerful nix CLI helper
+    nh = {
+      enable = true;
+      flake = "/etc/nixos";
+      clean = {
+        enable = true;
+        extraArgs = "--keep 5 --keep-since 3d";
+      };
+    };
+
+    # Drop in `cd` replacement with support for remembering directories commonly entered
+    zoxide = {
+      enable = true;
+      flags = [ "--cmd cd" ];
     };
 
     zsh = {

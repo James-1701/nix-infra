@@ -128,37 +128,6 @@
       };
     };
 
-  programs = {
-    nix-ld.enable = true; # Allows running unpatched dynamic binaries on NixOS
-
-    # nh is a powerful nix CLI helper
-    nh = {
-      enable = true;
-      flake = "/etc/nixos";
-      clean = {
-        enable = true;
-        extraArgs = "--keep 5 --keep-since 3d";
-      };
-    };
-
-    # Sets up git
-    git = {
-      enable = true;
-      config = {
-        push.autoSetupRemote = true;
-        init.defaultBranch = "main";
-        url."https://github.com/".insteadOf = [
-          "gh:"
-          "github:"
-        ];
-        user = {
-          name = "James";
-          email = "me@jameshollister.org";
-        };
-      };
-    };
-  };
-
   # Bypasses some non-fatal boot errors instead of going to a completely locked down shell
   systemd.enableEmergencyMode = false;
 
