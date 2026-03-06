@@ -64,6 +64,7 @@
       viAlias = true;
       configure = {
         customRC = ''
+          set clipboard=unnamedplus
           set number
           set list
         '';
