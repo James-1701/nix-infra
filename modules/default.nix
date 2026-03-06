@@ -110,6 +110,11 @@
     ]
     ++ [
 
+      # Custom cloudflare cname dns adder
+      ../services/cloudflare-cname.nix
+    ]
+    ++ [
+
       # Imports the needed external flake modules
       inputs.disko.nixosModules.disko
       inputs.sops-nix.nixosModules.sops

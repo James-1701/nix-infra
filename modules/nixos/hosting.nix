@@ -8,6 +8,7 @@
 
 let
   domain = "jameshollister.org";
+  tailnet = "seagull-court.ts.net";
 in
 {
   # Fixes a bug in nginx virtualHosts where they dont use the default acme setup
@@ -47,20 +48,30 @@ in
       };
     })
 
-    # Nginx support
+    # Nginx support (Really just my main reverse proxy, cert signing and dns setup)
     (lib.mkIf (lineage.has.usage "Nginx") {
-      services.nginx = {
-        enable = true;
-        recommendedTlsSettings = true;
-        recommendedGzipSettings = true;
-        recommendedOptimisation = true;
-        recommendedProxySettings = true;
+      services = {
+        nginx = {
+          enable = true;
+          recommendedTlsSettings = true;
+          recommendedGzipSettings = true;
+          recommendedOptimisation = true;
+          recommendedProxySettings = true;
+        };
+
+        # Sets cloudflare DNS for my hosted projects
+        cloudflare-cname = {
+          enable = true;
+          zone = domain;
+          tokenFile = config.sops.secrets.CLOUDFLARE_DNS_API_TOKEN.path;
+        };
       };
 
+      # Signs certs
       security.acme = {
         acceptTerms = true;
         defaults = {
-          email = "me@jameshollister.org";
+          email = "me@${domain}";
           dnsProvider = "cloudflare";
           environmentFile = config.sops.templates."acme-env".path;
         };
@@ -94,7 +105,8 @@ in
         let
           grafana = {
             http_port = 3001;
-            domain = "monitoring.${domain}";
+            subdomain = "monitoring";
+            domain = "${grafana.subdomain}.${domain}";
           };
           prometheus.port = 9090;
         in
@@ -132,11 +144,13 @@ in
                 static_configs = [
                   {
                     targets = [
-                      "dev-laptop-01.seagull-court.ts.net:9100"
-                      "home-server-01.seagull-court.ts.net:9100"
-                      "home-server-02.seagull-court.ts.net:9100"
-                      "cloud-server-01.seagull-court.ts.net:9100"
-                      "cloud-server-03.seagull-court.ts.net:9100"
+
+                      # TODO: Convert to function that gets all hosts later
+                      "dev-laptop-01.${tailnet}:9100"
+                      "home-server-01.${tailnet}:9100"
+                      "home-server-02.${tailnet}:9100"
+                      "cloud-server-01.${tailnet}:9100"
+                      "cloud-server-03.${tailnet}:9100"
                     ];
                   }
                 ];
@@ -150,9 +164,12 @@ in
                 static_configs = [
                   {
                     targets = [
-                      "https://git.jameshollister.org"
-                      "https://cloud.jameshollister.org"
-                      "https://n8n.jameshollister.org"
+
+                      # TODO: Integrate into other services better later
+                      "https://git.${domain}"
+                      "https://cloud.${domain}"
+                      "https://n8n.${domain}"
+                      "https://${grafana.domain}"
                     ];
                   }
                 ];
@@ -204,6 +221,7 @@ in
           };
 
           # Nginx reverse proxy for Grafana
+          cloudflare-cname.records.${grafana.subdomain} = "${config.networking.hostName}.${tailnet}";
           nginx.virtualHosts.${grafana.domain} = {
             forceSSL = true;
             enableACME = true;
@@ -228,9 +246,11 @@ in
         let
           SSH_PORT = 2222;
           HTTP_PORT = 3000;
-          DOMAIN = "git.${domain}";
+          SUBDOMAIN = "git";
+          DOMAIN = "${SUBDOMAIN}.${domain}";
         in
         {
+          cloudflare-cname.records.${SUBDOMAIN} = "${config.networking.hostName}.${tailnet}";
           openssh.ports = [ SSH_PORT ]; # Uses the system ssh installation on a different port
           nginx.virtualHosts.${DOMAIN} = {
             enableACME = true;
@@ -272,26 +292,31 @@ in
     })
 
     (lib.mkIf (lineage.has.usage "Nextcloud") {
-      services = {
-        nginx.virtualHosts.${config.services.nextcloud.hostName} = {
-          forceSSL = true;
-          enableACME = true;
-        };
-        nextcloud = {
-          enable = true;
-          configureRedis = true;
-          appstoreEnable = true;
-          autoUpdateApps.enable = true;
-          package = pkgs.nextcloud33;
-          hostName = "cloud.${domain}";
-          https = true;
-          config = {
-            adminuser = "admin";
-            adminpassFile = config.sops.secrets.nextcloud-admin-password.path;
-            dbtype = "sqlite";
+      services =
+        let
+          subdomain = "cloud";
+        in
+        {
+          cloudflare-cname.records.${subdomain} = "${config.networking.hostName}.${tailnet}";
+          nginx.virtualHosts.${config.services.nextcloud.hostName} = {
+            forceSSL = true;
+            enableACME = true;
+          };
+          nextcloud = {
+            enable = true;
+            configureRedis = true;
+            appstoreEnable = true;
+            autoUpdateApps.enable = true;
+            package = pkgs.nextcloud33;
+            hostName = "${subdomain}.${domain}";
+            https = true;
+            config = {
+              adminuser = "admin";
+              adminpassFile = config.sops.secrets.nextcloud-admin-password.path;
+              dbtype = "sqlite";
+            };
           };
         };
-      };
 
       # Persist with proper ownership
       environment.persistence."/nix/persist".directories = [ config.services.nextcloud.datadir ];
@@ -305,9 +330,11 @@ in
       services =
         let
           port = "5678";
+          subdomain = "n8n";
         in
         {
-          nginx.virtualHosts."n8n.${domain}" = {
+          cloudflare-cname.records.${subdomain} = "${config.networking.hostName}.${tailnet}";
+          nginx.virtualHosts."${subdomain}.${domain}" = {
             enableACME = true;
             forceSSL = true;
             extraConfig = "client_max_body_size 16m;";
@@ -413,7 +440,7 @@ in
         wantedBy = [ "multi-user.target" ];
 
         serviceConfig = {
-          ExecStart = "${pkgs.phantom-bin}/bin/phantom-linux --server jameshollister.org:19132";
+          ExecStart = "${pkgs.phantom-bin}/bin/phantom-linux --server ${domain}:19132";
           Restart = "always";
           RestartSec = "5s";
           User = "phantom";

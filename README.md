@@ -93,6 +93,10 @@ This infrastructure is designed to meet these core requirements:
   using a managed domain, providing HTTPS access via named subdomains (e.g.
   `git.example.com`) without exposing raw IPs or ports.
 
+- **Declarative DNS Management:** CNAME records for hosted services are declared
+  alongside the services that use them and are automatically synced to
+  Cloudflare using a custom NixOS module.
+
 - **Secret Management:** Secrets are encrypted at rest using **SOPS** (Secrets
   OPerationS) with **age** encryption, seamlessly integrated via `sops-nix`.
 
@@ -125,6 +129,7 @@ This infrastructure is designed to meet these core requirements:
 - **`lineage/`**: The trait database defining the hierarchy of roles (e.g., a
   "Git Server" implies "Nginx" which implies "SSH Access").
 - **`secrets/`**: Encrypted secrets managed by SOPS.
+- **`services/`**: Custom NixOS modules creating new service options.
 
 ## Tech Stack
 
