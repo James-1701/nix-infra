@@ -392,18 +392,9 @@ in
         host = "0.0.0.0";
         environmentVariables.num_batch = "512";
         loadModels = [
-          "granite4:3b"
-          "lfm2.5-thinking:1.2b"
-          "phi4-mini-reasoning:3.8b"
-          "phi4-mini:3.8b"
-          "qwen3-vl:4b"
-          "qwen3-vl:8b"
-          "qwen3:0.6b"
-          "qwen3:4b"
-          "qwen3:8b"
-          "qwen3:14b"
-          "gemma3n:e2b"
-          "gemma3:4b"
+          "qwen3.5:0.8b"
+          "qwen3.5:4b"
+          "qwen3.5:9b"
         ];
       };
 
