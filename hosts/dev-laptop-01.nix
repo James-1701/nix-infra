@@ -80,22 +80,13 @@
   };
 
   # 5. Software Packages
-  packages = {
-    nixpkgs = [
+  packages.flatpaks = [
 
-      # System
-      "nautilus"
-      "gnome-software"
-      "gnome-control-center"
-    ];
-    flatpaks = [
-
-      # System
-      "org.gnome.Weather"
-      "org.gnome.Calendar"
-      "org.gnome.NetworkDisplays"
-    ];
-  };
+    # System
+    "org.gnome.Weather"
+    "org.gnome.Calendar"
+    "org.gnome.NetworkDisplays"
+  ];
 
   # 6. Host-Specific Extensions
   modules =

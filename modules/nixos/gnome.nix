@@ -54,6 +54,9 @@
     environment = {
       systemPackages =
         (with pkgs; [
+          nautilus
+          gnome-software
+          gnome-control-center
           adwaita-icon-theme
           gnome.gvfs
           gvfs
