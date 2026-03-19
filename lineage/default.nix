@@ -231,7 +231,7 @@
         };
         "Edge Proxy" = {
           Nginx = {
-            Prometheus = { };
+            Monitoring = { };
             Forgejo = { };
             Nextcloud = { };
             OpenClaw = { };

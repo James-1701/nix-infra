@@ -38,10 +38,7 @@
     journald.console = "/dev/tty12"; # Enables journald output to the last TTY
     logrotate.enable = false; # Not needed with journald
     fwupd.enable = !(lineage.has.form "VM"); # Bare metal systems need firmware updates
-    prometheus.exporters.node = {
-      enable = true;
-      openFirewall = false;
-    };
+    alloy.enable = true; # Metrics & logging
   };
 
   # Ensures all firmware is installed
@@ -52,6 +49,48 @@
   };
 
   environment = {
+
+    # Alloy config
+    etc."alloy/config.alloy".text = ''
+      loki.source.journal "journal" {
+        forward_to    = [loki.write.default.receiver]
+        relabel_rules = loki.relabel.journal.rules
+        labels        = { job = "systemd-journal" }
+      }
+
+      loki.relabel "journal" {
+        rule {
+          source_labels = ["__journal__systemd_unit"]
+          target_label  = "unit"
+        }
+        rule {
+          source_labels = ["__journal__hostname"]
+          target_label  = "host"
+        }
+        forward_to = []
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "https://loki.jameshollister.org/loki/api/v1/push"
+        }
+      }
+
+      prometheus.exporter.unix "local" {}
+
+      prometheus.scrape "system" {
+        targets         = prometheus.exporter.unix.local.targets
+        forward_to      = [prometheus.remote_write.default.receiver]
+        scrape_interval = "60s"
+      }
+
+      prometheus.remote_write "default" {
+        endpoint {
+          url = "https://prometheus.jameshollister.org/api/v1/write"
+        }
+      }
+    '';
+
     defaultPackages = lib.mkForce [ ]; # Ensures no random packages are installed
 
     # Common directories needing to be persisted

@@ -1,6 +1,7 @@
 {
   lineage,
   config,
+  pkgs-stable,
   pkgs,
   lib,
   ...
@@ -100,7 +101,7 @@ in
       services.traefik.enable = true;
     })
 
-    (lib.mkIf (lineage.has.usage "Prometheus") {
+    (lib.mkIf (lineage.has.usage "Monitoring") {
       services =
         let
           grafana = {
@@ -108,7 +109,16 @@ in
             subdomain = "monitoring";
             domain = "${grafana.subdomain}.${domain}";
           };
-          prometheus.port = 9090;
+          loki = {
+            port = 3100;
+            subdomain = "loki";
+            domain = "${loki.subdomain}.${domain}";
+          };
+          prometheus = {
+            port = 9090;
+            subdomain = "prometheus";
+            domain = "${prometheus.subdomain}.${domain}";
+          };
         in
         {
           # Monitors all active systems
@@ -116,11 +126,7 @@ in
             enable = true;
             inherit (prometheus) port;
             retentionTime = "90d";
-
-            globalConfig = {
-              scrape_interval = "1m";
-              evaluation_interval = "1m";
-            };
+            extraFlags = [ "--web.enable-remote-write-receiver" ];
 
             exporters.blackbox = {
               enable = true;
@@ -140,22 +146,6 @@ in
 
             scrapeConfigs = [
               {
-                job_name = "nodes";
-                static_configs = [
-                  {
-                    targets = [
-
-                      # TODO: Convert to function that gets all hosts later
-                      "dev-laptop-01.${tailnet}:9100"
-                      "home-server-01.${tailnet}:9100"
-                      "home-server-02.${tailnet}:9100"
-                      "cloud-server-01.${tailnet}:9100"
-                      "cloud-server-03.${tailnet}:9100"
-                    ];
-                  }
-                ];
-              }
-              {
                 job_name = "services";
                 metrics_path = "/probe";
                 params = {
@@ -164,8 +154,6 @@ in
                 static_configs = [
                   {
                     targets = [
-
-                      # TODO: Integrate into other services better later
                       "https://git.${domain}"
                       "https://cloud.${domain}"
                       "https://n8n.${domain}"
@@ -191,9 +179,52 @@ in
             ];
           };
 
-          # WebUI to access prometheus
+          # Loki for log management
+          loki = {
+            enable = true;
+            configuration = {
+              auth_enabled = false;
+              server.http_listen_port = loki.port;
+              limits_config.retention_period = "744h";
+              schema_config.configs = [
+                {
+                  from = "2024-01-01";
+                  store = "tsdb";
+                  object_store = "filesystem";
+                  schema = "v13";
+                  index = {
+                    prefix = "index_";
+                    period = "24h";
+                  };
+                }
+              ];
+              common = {
+                ring = {
+                  instance_addr = "127.0.0.1";
+                  kvstore.store = "inmemory";
+                };
+                replication_factor = 1;
+                path_prefix = "/var/lib/loki";
+              };
+              storage_config = {
+                tsdb_shipper = {
+                  active_index_directory = "/var/lib/loki/tsdb-index";
+                  cache_location = "/var/lib/loki/tsdb-cache";
+                };
+                filesystem.directory = "/var/lib/loki/chunks";
+              };
+              compactor = {
+                working_directory = "/var/lib/loki/compactor";
+                retention_enabled = true;
+                delete_request_store = "filesystem";
+              };
+            };
+          };
+
+          # WebUI to access prometheus & loki
           grafana = {
             enable = true;
+            package = pkgs-stable.grafana;
             openFirewall = false;
             settings = {
               server = {
@@ -214,29 +245,55 @@ in
                   name = "Prometheus";
                   type = "prometheus";
                   url = "http://localhost:${toString prometheus.port}";
-                  isDefault = true;
+                  isDefault = false;
+                }
+                {
+                  name = "Loki";
+                  type = "loki";
+                  url = "http://localhost:${toString loki.port}";
+                  isDefault = false;
                 }
               ];
             };
           };
 
-          # Nginx reverse proxy for Grafana
-          cloudflare-cname.records.${grafana.subdomain} = "${config.networking.hostName}.${tailnet}";
-          nginx.virtualHosts.${grafana.domain} = {
-            forceSSL = true;
-            enableACME = true;
-            locations."/" = {
-              proxyPass = "http://127.0.0.1:${toString grafana.http_port}";
-              proxyWebsockets = true;
+          # Nginx reverse proxy for Grafana & loki
+          cloudflare-cname.records = {
+            ${grafana.subdomain} = "${config.networking.hostName}.${tailnet}";
+            ${prometheus.subdomain} = "${config.networking.hostName}.${tailnet}";
+            ${loki.subdomain} = "${config.networking.hostName}.${tailnet}";
+          };
+          nginx.virtualHosts = {
+            ${grafana.domain} = {
+              forceSSL = true;
+              enableACME = true;
+              locations."/" = {
+                proxyPass = "http://127.0.0.1:${toString grafana.http_port}";
+                proxyWebsockets = true;
+              };
+            };
+            ${prometheus.domain} = {
+              forceSSL = true;
+              enableACME = true;
+              locations."/".proxyPass = "http://127.0.0.1:${toString prometheus.port}";
+            };
+            ${loki.domain} = {
+              forceSSL = true;
+              enableACME = true;
+              locations."/".proxyPass = "http://127.0.0.1:${toString loki.port}";
             };
           };
         };
 
       # Persists the prometheus and grafana setup with proper ownership
-      systemd.tmpfiles.rules = [ "d ${config.services.grafana.dataDir} 0750 grafana grafana -" ];
+      systemd.tmpfiles.rules = [
+        "d ${config.services.grafana.dataDir} 0750 grafana grafana -"
+        "d ${config.services.loki.dataDir} 0750 ${config.services.loki.user} ${config.services.loki.group} -"
+      ];
       environment.persistence."/nix/persist".directories = [
         "/var/lib/${config.services.prometheus.stateDir}"
         config.services.grafana.dataDir
+        config.services.loki.dataDir
       ];
     })
 

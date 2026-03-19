@@ -74,7 +74,7 @@
       };
     })
 
-    (lib.mkIf (lineage.has.usage "Prometheus") {
+    (lib.mkIf (lineage.has.usage "Monitoring") {
       sops.secrets = {
         grafana-admin-password.owner = "grafana";
         grafana-secret-key.owner = "grafana";
