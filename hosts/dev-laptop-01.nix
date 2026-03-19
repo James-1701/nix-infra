@@ -45,7 +45,6 @@
           nixpkgs = [
 
             # Productivity
-            "gnome-console"
             "vscode-fhs"
             "bitwarden-desktop"
           ];

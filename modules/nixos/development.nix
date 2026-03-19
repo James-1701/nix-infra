@@ -30,6 +30,9 @@
     environment = {
       systemPackages = with pkgs; [
 
+        # Terminal
+        ghostty
+
         # I use devenv to manage all my projects, it makes dev workflows on nix much more simple and flexible
         devenv
 

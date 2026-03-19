@@ -48,6 +48,7 @@
             khelpcenter
             kguiaddons
             gwenview
+            konsole
             oxygen
             okular
             baloo
