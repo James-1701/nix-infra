@@ -244,13 +244,13 @@ in
                 {
                   name = "Prometheus";
                   type = "prometheus";
-                  url = "http://localhost:${toString prometheus.port}";
+                  url = "http://127.0.0.1:${toString prometheus.port}";
                   isDefault = false;
                 }
                 {
                   name = "Loki";
                   type = "loki";
-                  url = "http://localhost:${toString loki.port}";
+                  url = "http://127.0.0.1:${toString loki.port}";
                   isDefault = false;
                 }
               ];
@@ -313,7 +313,7 @@ in
             enableACME = true;
             forceSSL = true;
             extraConfig = "client_max_body_size 256m;";
-            locations."/".proxyPass = "http://localhost:${toString HTTP_PORT}";
+            locations."/".proxyPass = "http://127.0.0.1:${toString HTTP_PORT}";
           };
           forgejo = {
             enable = true;
