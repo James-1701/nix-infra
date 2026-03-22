@@ -110,8 +110,9 @@
     ]
     ++ [
 
-      # Custom cloudflare cname dns adder
+      # Custom services, NOTE: much more and I'll make this auto import like the packages
       ../services/cloudflare-cname.nix
+      ../services/mcxboxbroadcast.nix
     ]
     ++ [
 

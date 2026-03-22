@@ -218,6 +218,7 @@
     };
     SSH = {
       Server = {
+        MCXboxBroadcast = { };
         Unbound = { };
         "Wake on Lan" = { };
         "Minecraft Proxy" = { };

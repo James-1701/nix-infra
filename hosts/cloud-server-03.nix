@@ -15,6 +15,7 @@
 
   # 3. System Profile
   usage = [
+    "MCXboxBroadcast"
     "Server"
   ];
 }
