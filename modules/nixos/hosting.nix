@@ -286,14 +286,19 @@ in
         };
 
       # Persists the prometheus and grafana setup with proper ownership
-      systemd.tmpfiles.rules = [
-        "d ${config.services.grafana.dataDir} 0750 grafana grafana -"
-        "d ${config.services.loki.dataDir} 0750 ${config.services.loki.user} ${config.services.loki.group} -"
-      ];
       environment.persistence."/nix/persist".directories = [
         "/var/lib/${config.services.prometheus.stateDir}"
-        config.services.grafana.dataDir
-        config.services.loki.dataDir
+        {
+          directory = config.services.grafana.dataDir;
+          user = "grafana";
+          group = "grafana";
+          mode = "0750";
+        }
+        {
+          directory = config.services.loki.dataDir;
+          inherit (config.services.loki) user group;
+          mode = "0750";
+        }
       ];
     })
 
@@ -340,11 +345,13 @@ in
         };
 
       # Persists forgejo
-      environment.persistence."/nix/persist".directories = [ config.services.forgejo.stateDir ];
-
-      # Ensures proper ownership for forgejo
-      systemd.tmpfiles.rules = [
-        "d /nix/persist${config.services.forgejo.stateDir} 0750 forgejo forgejo -"
+      environment.persistence."/nix/persist".directories = [
+        {
+          directory = config.services.forgejo.stateDir;
+          user = "forgejo";
+          group = "forgejo";
+          mode = "0750";
+        }
       ];
     })
 
@@ -376,9 +383,13 @@ in
         };
 
       # Persist with proper ownership
-      environment.persistence."/nix/persist".directories = [ config.services.nextcloud.datadir ];
-      systemd.tmpfiles.rules = [
-        "d /nix/persist${config.services.nextcloud.datadir} 0750 nextcloud nextcloud -"
+      environment.persistence."/nix/persist".directories = [
+        {
+          directory = config.services.nextcloud.datadir;
+          user = "nextcloud";
+          group = "nextcloud";
+          mode = "0750";
+        }
       ];
     })
 
@@ -456,8 +467,14 @@ in
       };
 
       # Persist Ollama with the proper permissions
-      environment.persistence."/nix/persist".directories = [ "/var/lib/private" ];
-      systemd.tmpfiles.rules = [ "d /var/lib/private/ollama 0700 ollama ollama -" ];
+      environment.persistence."/nix/persist".directories = [
+        {
+          directory = "/var/lib/private/ollama";
+          user = "ollama";
+          group = "ollama";
+          mode = "0700";
+        }
+      ];
     })
 
     # Hosts a game server panel manager
