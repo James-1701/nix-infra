@@ -219,7 +219,6 @@
     SSH = {
       Server = {
         Unbound = { };
-        Minecraft = { };
         "Wake on Lan" = { };
         "Minecraft Proxy" = { };
         "Nix Remote Builder" = { };
@@ -231,6 +230,9 @@
         };
         "Edge Proxy" = {
           Nginx = {
+            PufferPanel = {
+              "Minecraft Server" = { };
+            };
             Monitoring = { };
             Forgejo = { };
             Nextcloud = { };

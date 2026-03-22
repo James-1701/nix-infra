@@ -460,53 +460,84 @@ in
       systemd.tmpfiles.rules = [ "d /var/lib/private/ollama 0700 ollama ollama -" ];
     })
 
-    # Hosts a minecraft server
-    (lib.mkIf (lineage.has.usage "Minecraft") {
+    # Hosts a game server panel manager
+    (lib.mkIf (lineage.has.usage "PufferPanel") (
+      let
+        port = "8080";
+        subdomain = "gaming";
+      in
+      {
+
+        services = {
+
+          # UI for managing game servers
+          pufferpanel = {
+            enable = true;
+            package = pkgs.buildFHSEnv {
+              name = "pufferpanel-fhs";
+              runScript = lib.getExe pkgs.pufferpanel;
+            };
+            environment = {
+              PUFFER_WEB_HOST = ":${port}";
+              PUFFER_PANEL_ENABLE = "true";
+              PUFFER_PANEL_REGISTRATIONENABLED = "false";
+            };
+          };
+
+          cloudflare-cname.records.${subdomain} = "${config.networking.hostName}.${tailnet}";
+          nginx.virtualHosts."${subdomain}.${domain}" = {
+            enableACME = true;
+            forceSSL = true;
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:${port}";
+              proxyWebsockets = true;
+            };
+          };
+        };
+
+        # Creates a user for pufferpanel
+        users.users.pufferpanel = {
+          isSystemUser = true;
+          group = "pufferpanel";
+          home = "/var/lib/pufferpanel";
+          createHome = true;
+        };
+        users.groups.pufferpanel = { };
+
+        # Fixes issue with `DynamicUser` and persistence
+        systemd.services.pufferpanel.serviceConfig = {
+          DynamicUser = lib.mkForce false;
+          User = lib.mkForce "pufferpanel";
+          Group = lib.mkForce "pufferpanel";
+        };
+
+        # Persist path
+        environment.persistence."/nix/persist".directories = [
+          {
+            directory = "/var/lib/pufferpanel";
+            user = "pufferpanel";
+            group = "pufferpanel";
+            mode = "0750";
+          }
+        ];
+      }
+    ))
+
+    # Opens firewall for Minecraft Server
+    (lib.mkIf (lineage.has.usage "Minecraft Server") {
       networking.firewall = {
         allowedTCPPorts = [ 25565 ];
         allowedUDPPorts = [ 19132 ];
       };
 
-      programs.java = {
-        enable = true;
-        binfmt = true;
-        package = pkgs.jdk21_headless;
-      };
+      environment.systemPackages = with pkgs; [
+        mrpack-install
+        packwiz
+      ];
     })
 
-    # Setups a Phantom, a proxy to connect game consoles to custom hosted servers
-    (lib.mkIf (lineage.has.usage "Minecraft Proxy") {
-      environment.systemPackages = [ pkgs.phantom ];
-
-      networking.firewall.allowedUDPPorts = [ 19132 ];
-
-      # Creates a systemd service to run the proxy on
-      systemd.services.phantom = {
-        description = "Phantom Bedrock Proxy";
-        after = [ "network.target" ];
-        wants = [ "network.target" ];
-        wantedBy = [ "multi-user.target" ];
-
-        serviceConfig = {
-          ExecStart = "${pkgs.phantom-bin}/bin/phantom-linux --server ${domain}:19132";
-          Restart = "always";
-          RestartSec = "5s";
-          User = "phantom";
-          Group = "phantom";
-          KillSignal = "SIGINT";
-        };
-      };
-
-      # Creates a user to run the systemd service with
-      users = {
-        users.phantom = {
-          isSystemUser = true;
-          group = "phantom";
-        };
-
-        groups.phantom = { };
-      };
-    })
+    # Easily allows connection to MC Servers from consoles
+    (lib.mkIf (lineage.has.usage "MCXboxBroadcast") { services.mcxboxbroadcast.enable = true; })
 
     # Unbound is a Custom DNS resolver
     # These rules route the default minecraft bedrock servers to the server itself
