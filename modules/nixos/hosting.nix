@@ -463,6 +463,7 @@ in
           "qwen3.5:0.8b"
           "qwen3.5:4b"
           "qwen3.5:9b"
+          "nemotron-3-nano:4b"
         ];
       };
 
