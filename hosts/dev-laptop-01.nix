@@ -23,7 +23,7 @@
 
   # 3. System Profile
   usage = [
-    "KDE"
+    "AeroThemePlasma"
     "fprint"
     "libvirt"
     "Waydroid"
