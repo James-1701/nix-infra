@@ -16,8 +16,8 @@ stdenv.mkDerivation {
   version = "2024-12-19";
 
   src = fetchurl {
-    url = "https://cloud.securew2.com/public/54120/GV-Student/certificates/digicertglobalrootca%20%5Bjdk%5D.cer";
-    hash = "sha256-Of3PKK7/4I0DJR/Mr2RePF3hn6TruvyJtO3ipCIUi6s=";
+    url = "https://cloud.securew2.com/public/54120/GV-Student/certificates/digicertglobalrootg2%20%5Bjdk%5D.cer";
+    hash = "sha256-XVUGQ7ZADUNBVQqbFK7dC0+sM65d632CR7a095nBMwY=";
   };
 
   dontUnpack = true;
