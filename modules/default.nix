@@ -24,7 +24,7 @@
         overlays = [
 
           # Custom packages from local pkgs directory
-          (import ../pkgs)
+          (import ../extra/pkgs)
 
           # Fixes intel-media-sdk build failure
           # Upstream issue: https://github.com/NixOS/nixpkgs/issues/432403
@@ -63,7 +63,7 @@
             # Only import desktop modules for Desktop systems that dont manage configuration declaratively
             # We do this because users with imperative setups would have their configurations overridden
             imports = lib.optionals ((lineage.has.usage "Desktop") && (user.persistence != "full")) (
-              map (module: ./home/${module}.nix) [
+              map (module: ./hm/${module}.nix) [
                 "kde"
                 "users"
                 "gnome"
@@ -111,8 +111,8 @@
     ++ [
 
       # Custom services, NOTE: much more and I'll make this auto import like the packages
-      ../services/cloudflare-cname.nix
-      ../services/mcxboxbroadcast.nix
+      ../extra/services/cloudflare-cname.nix
+      ../extra/services/mcxboxbroadcast.nix
     ]
     ++ [
 
