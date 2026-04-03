@@ -2,6 +2,7 @@
   inputs,
   lineage,
   config,
+  pkgs,
   lib,
   ...
 }:
@@ -39,11 +40,17 @@ in
             dimInactive.enable = true;
             blur.enable = true;
           };
+          shortcuts = {
+            "com.cherry_ai.CherryStudio" = {
+              "2A5C325F474ACD3906F718C7F01E29A4-" = [ ];
+              "9BE37038461C3EFE3610F73C2A1525C6-Ctrl+0" = [ ];
+            };
+          };
           configFile = {
             kcminputrc = {
-              "Mouse" = {
-                "cursorSize" = config.home.pointerCursor.size;
-                "cursorTheme" = config.home.pointerCursor.name;
+              Mouse = {
+                cursorSize = config.home.pointerCursor.size;
+                cursorTheme = config.home.pointerCursor.name;
               };
               "Libinput/1267/12554/ELAN07CD:00 04F3:310A Touchpad" = {
                 ClickMethod = 2;
@@ -64,7 +71,7 @@ in
               };
             };
             kwalletrc.Wallet = {
-              "Enabled" = true;
+              Enabled = true;
               "Leave Open" = true;
               "First Use" = false;
               "Prompt on Open" = false;
@@ -76,7 +83,10 @@ in
               PreviewImage = "file://${wallpaper}";
             };
             kwinrc = {
-              Plugins.krohnkiteEnabled = true;
+              Plugins = {
+                krohnkiteEnabled = true;
+                "slideEnabled" = "";
+              };
               Xwayland.Scale = 1.5;
               TouchEdges = {
                 Left = "ApplicationLauncher";
@@ -136,34 +146,70 @@ in
           [General]
           theme=Windows7Aero
         '';
+        xdg.configFile = {
+          plasmashellrc.text = ''
+            [PlasmaViews][Panel 2]
+            floating=0
+
+            [PlasmaViews][Panel 2][Defaults]
+            thickness=40
+          '';
+          "autostart/x-atpootb.desktop".text = ''
+            [Desktop Entry]
+            Hidden=true
+          '';
+        };
         programs.plasma = {
           workspace = {
-            iconTheme = "Windows 7 Aero";
             wallpaper = lib.mkForce /var/lib/wallpapers/win7.jpg;
             theme = "Seven-Black";
+            lookAndFeel = "authui7";
+            # iconTheme = "Windows 7 Aero";
+            # splashScreen.theme = lib.mkForce "authui7";
+            # windowDecorations = {
+            #   theme = "SMOD";
+            #   library = "none";
+            # };
           };
-          panels = [
-            {
-              floating = false;
-              location = "bottom";
-              widgets = [
-                "io.gitgud.wackyideas.SevenStart"
-                "org.kde.plasma.pager"
-                "org.kde.plasma.icontasks"
-                "org.kde.plasma.marginsseparator"
-                "org.kde.plasma.systemtray"
-                "io.gitgud.wackyideas.digitalclocklite"
-                "io.gitgud.wackyideas.win7showdesktop"
-              ];
-            }
-          ];
+          kwin.effects.blur.enable = lib.mkForce false;
+          # panels = [
+          #   {
+          #     floating = false;
+          #     height = 40;
+          #     location = "bottom";
+          #     widgets = [
+          #       "io.gitgud.wackyideas.SevenStart"
+          #       # "org.kde.plasma.activitypager"
+          #       "io.gitgud.wackyideas.seventasks" # "org.kde.plasma.icontasks"
+          #       "io.gitgud.wackyideas.systemtray" # "org.kde.plasma.systemtray"
+          #       "io.gitgud.wackyideas.digitalclocklite"
+          #       "io.gitgud.wackyideas.win7showdesktop"
+          #     ];
+          #   }
+          # ];
           configFile = {
-            "kdeglobals" = {
-              "KDE"."widgetStyle" = "kvantum";
-              "Icons"."Theme" = "Windows 7 Aero";
-              "Sounds"."Theme" = "Windows 7";
+            plasmaparc.Theme.name = "Seven-Black";
+            ksplashrc.KSplash.Theme = lib.mkForce "authui7";
+            kwinrc.Plugins.smodglowEnabled = lib.mkForce "";
+            kdeglobals = {
+              KDE.widgetStyle = "kvantum";
+              Icons.Theme = "Windows 7 Aero";
+              Sounds.Theme = "Windows 7";
             };
-            "plasmaparc"."Theme"."name" = "Seven-Black";
+            kcminputrc.Mouse = {
+              cursorSize = lib.mkForce 32;
+              cursorTheme = lib.mkForce "aero-drop";
+            };
+            "plasma-io.gitgud.wackyideas.desktop-appletsrc"."Containments][2][Applets][4][Configuration][General".launchers =
+              "applications:dev.zed.Zed.desktop,applications:firefox-devedition.desktop";
+            kscreenlockerrc."Greeter/Wallpaper/org.kde.image/General" = {
+              Image = lib.mkForce "file://${
+                inputs.aerothemeplasma-nix.packages.${pkgs.system}.sddm-theme-mod
+              }/share/sddm/themes/sddm-theme-mod/bgtexture.jpg";
+              PreviewImage = lib.mkForce "file://${
+                inputs.aerothemeplasma-nix.packages.${pkgs.system}.sddm-theme-mod
+              }}/share/sddm/themes/sddm-theme-mod/bgtexture.jpg";
+            };
           };
         };
       })

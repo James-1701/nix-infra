@@ -58,7 +58,11 @@
 
           # Persists KDE Wallet
           persistence."/nix/persist".users = lib.mapAttrs (_: _: {
-            directories = [ ".local/share/kwalletd" ];
+            directories = [
+              ".local/share/kwalletd"
+              ".local/share/ksmserver"
+            ];
+            files = [ ".config/kwinoutputconfig.json" ];
           }) (lib.filterAttrs (_: user: user.persistence == "default") config.internal.users);
         };
       }
@@ -66,8 +70,26 @@
       # AeroThemePlasma is a theme to make KDE Plasma look like the Windows 7 Shell
       # Because this is just an aesthetic theme this is pretty low priority for me to work on more
       (lib.mkIf (lineage.has.usage "AeroThemePlasma") {
-        environment.systemPackages = [ pkgs.aerothemeplasma.theme ];
+        services.displayManager.defaultSession = lib.mkForce "aerothemeplasma";
+
         qt.style = "kvantum";
+
+        programs.aeroshell = {
+          enable = true;
+          fonts.enable = false; # TODO
+          polkit.enable = true;
+          aerothemeplasma = {
+            enable = true;
+            sddm.enable = true;
+            plymouth.enable = false;
+          };
+        };
+
+        environment.persistence."/nix/persist".users = lib.mapAttrs (_: _: {
+          files = [
+            ".config/plasma-io.gitgud.wackyideas.desktop-appletsrc"
+          ];
+        }) (lib.filterAttrs (_: user: user.persistence == "default") config.internal.users);
       })
     ]
   );

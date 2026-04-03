@@ -70,6 +70,10 @@
         home-manager.follows = "home-manager";
       };
     };
+    aerothemeplasma-nix = {
+      url = "github:james-1701/aerothemeplasma-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # Flake outputs are just what the flake build

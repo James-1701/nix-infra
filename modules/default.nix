@@ -126,5 +126,6 @@
       inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.impermanence.nixosModules.impermanence
       inputs.nix-index-database.nixosModules.nix-index
+      inputs.aerothemeplasma-nix.nixosModules.aerothemeplasma-nix
     ];
 }

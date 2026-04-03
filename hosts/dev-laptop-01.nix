@@ -23,11 +23,11 @@
 
   # 3. System Profile
   usage = [
+    "KDE"
     "fprint"
     "libvirt"
     "Waydroid"
     "Development"
-    "KDE"
     "Printing"
     "Nix Remote Builder"
   ];

@@ -1,8 +1,29 @@
 {
   "nodes": {
-    "cosmic-manager": {
+    "aerothemeplasma-nix": {
       "inputs": {
         "flake-parts": "flake-parts",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775191487,
+        "narHash": "sha256-4TLuNpqbnQ6u0CrFGPDAa0SPipJcHqQ5c5WAbYPOcB4=",
+        "owner": "james-1701",
+        "repo": "aerothemeplasma-nix",
+        "rev": "d9dd58d05b52485b0ef68ab4c1ec116dc0370343",
+        "type": "github"
+      },
+      "original": {
+        "owner": "james-1701",
+        "repo": "aerothemeplasma-nix",
+        "type": "github"
+      }
+    },
+    "cosmic-manager": {
+      "inputs": {
+        "flake-parts": "flake-parts_2",
         "home-manager": [
           "home-manager"
         ],
@@ -184,6 +205,24 @@
     },
     "flake-parts": {
       "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1772408722,
+        "narHash": "sha256-rHuJtdcOjK7rAHpHphUb1iCvgkU3GpfvicLMwwnfMT0=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "f20dc5d9b8027381c474144ecabc9034d6a839a3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_2": {
+      "inputs": {
         "nixpkgs-lib": [
           "cosmic-manager",
           "nixpkgs"
@@ -203,7 +242,7 @@
         "type": "github"
       }
     },
-    "flake-parts_2": {
+    "flake-parts_3": {
       "inputs": {
         "nixpkgs-lib": [
           "determinate",
@@ -376,7 +415,7 @@
     },
     "nix": {
       "inputs": {
-        "flake-parts": "flake-parts_2",
+        "flake-parts": "flake-parts_3",
         "git-hooks-nix": "git-hooks-nix",
         "nixpkgs": "nixpkgs",
         "nixpkgs-23-11": "nixpkgs-23-11",
@@ -479,6 +518,21 @@
         "owner": "NixOS",
         "repo": "nixpkgs",
         "rev": "a62e6edd6d5e1fa0329b8653c801147986f8d446",
+        "type": "github"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1772328832,
+        "narHash": "sha256-e+/T/pmEkLP6BHhYjx6GmwP5ivonQQn0bJdH9YrRB+Q=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "c185c7a5e5dd8f9add5b2f8ebeff00888b070742",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
         "type": "github"
       }
     },
@@ -600,6 +654,7 @@
     },
     "root": {
       "inputs": {
+        "aerothemeplasma-nix": "aerothemeplasma-nix",
         "cosmic-manager": "cosmic-manager",
         "determinate": "determinate",
         "disko": "disko",
