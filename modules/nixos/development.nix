@@ -30,6 +30,9 @@
     environment = {
       systemPackages = with pkgs; [
 
+        # Heard a lot about jj VCS and want to give it a try
+        jujutsu
+
         # Terminal
         ghostty
 
