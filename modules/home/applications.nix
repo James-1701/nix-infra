@@ -34,6 +34,11 @@
               icon = "https://wiki.nixos.org/favicon.ico";
               definedAliases = [ "@nw" ];
             };
+            "Flathub" = {
+              urls = [ { template = " https://flathub.org/en/apps/search?q={searchTerms}"; } ];
+              icon = "https://flathub.org/favicon.ico";
+              definedAliases = [ "@fh" ];
+            };
           };
         };
       };
