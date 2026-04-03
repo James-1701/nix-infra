@@ -460,10 +460,11 @@ in
         host = "0.0.0.0";
         environmentVariables.num_batch = "512";
         loadModels = [
-          "qwen3.5:0.8b"
+          "qwen3.5:2b"
           "qwen3.5:4b"
           "qwen3.5:9b"
-          "nemotron-3-nano:4b"
+          "lfm2.5-thinking:1.2b"
+          "hf.co/unsloth/Qwen3-4B-Instruct-2507-GGUF:UD-Q4_K_XL"
         ];
       };
 
