@@ -2,7 +2,7 @@
   inputs,
   lineage,
   config,
-  pkgs,
+  # pkgs,
   lib,
   ...
 }:
@@ -27,7 +27,7 @@ in
           session.sessionRestore.restoreOpenApplicationsOnLogin = "onLastLogout";
           windows.allowWindowsToRememberPositions = true;
           workspace = {
-            inherit wallpaper;
+            # inherit wallpaper; # TODO FIX
             enableMiddleClickPaste = true;
             clickItemTo = "select";
             splashScreen.theme = "None";
@@ -139,80 +139,79 @@ in
         };
       }
 
-      # This is an example of a theme-specific configuration, applied only if the "AeroThemePlasma" usage is present in the lineage
-      # Currently I am not using it but once I can get all the packages from it to build I will switch over to this theme
-      (lib.mkIf (lineage.has.usage "AeroThemePlasma") {
-        home.file.".config/Kvantum/kvantum.kvconfig".text = ''
-          [General]
-          theme=Windows7Aero
-        '';
-        xdg.configFile = {
-          plasmashellrc.text = ''
-            [PlasmaViews][Panel 2]
-            floating=0
+      # Theme-specific configuration, applied only if the "AeroThemePlasma" usage is present in the lineage
+      # (lib.mkIf (lineage.has.usage "AeroThemePlasma") {
+      #   home.file.".config/Kvantum/kvantum.kvconfig".text = ''
+      #     [General]
+      #     theme=Windows7Aero
+      #   '';
+      #   xdg.configFile = {
+      #     plasmashellrc.text = ''
+      #       [PlasmaViews][Panel 2]
+      #       floating=0
 
-            [PlasmaViews][Panel 2][Defaults]
-            thickness=40
-          '';
-          "autostart/x-atpootb.desktop".text = ''
-            [Desktop Entry]
-            Hidden=true
-          '';
-        };
-        programs.plasma = {
-          workspace = {
-            wallpaper = lib.mkForce /var/lib/wallpapers/win7.jpg;
-            theme = "Seven-Black";
-            lookAndFeel = "authui7";
-            # iconTheme = "Windows 7 Aero";
-            # splashScreen.theme = lib.mkForce "authui7";
-            # windowDecorations = {
-            #   theme = "SMOD";
-            #   library = "none";
-            # };
-          };
-          kwin.effects.blur.enable = lib.mkForce false;
-          # panels = [
-          #   {
-          #     floating = false;
-          #     height = 40;
-          #     location = "bottom";
-          #     widgets = [
-          #       "io.gitgud.wackyideas.SevenStart"
-          #       # "org.kde.plasma.activitypager"
-          #       "io.gitgud.wackyideas.seventasks" # "org.kde.plasma.icontasks"
-          #       "io.gitgud.wackyideas.systemtray" # "org.kde.plasma.systemtray"
-          #       "io.gitgud.wackyideas.digitalclocklite"
-          #       "io.gitgud.wackyideas.win7showdesktop"
-          #     ];
-          #   }
-          # ];
-          configFile = {
-            plasmaparc.Theme.name = "Seven-Black";
-            ksplashrc.KSplash.Theme = lib.mkForce "authui7";
-            kwinrc.Plugins.smodglowEnabled = lib.mkForce "";
-            kdeglobals = {
-              KDE.widgetStyle = "kvantum";
-              Icons.Theme = "Windows 7 Aero";
-              Sounds.Theme = "Windows 7";
-            };
-            kcminputrc.Mouse = {
-              cursorSize = lib.mkForce 32;
-              cursorTheme = lib.mkForce "aero-drop";
-            };
-            "plasma-io.gitgud.wackyideas.desktop-appletsrc"."Containments][2][Applets][4][Configuration][General".launchers =
-              "applications:dev.zed.Zed.desktop,applications:firefox-devedition.desktop";
-            kscreenlockerrc."Greeter/Wallpaper/org.kde.image/General" = {
-              Image = lib.mkForce "file://${
-                inputs.aerothemeplasma-nix.packages.${pkgs.system}.sddm-theme-mod
-              }/share/sddm/themes/sddm-theme-mod/bgtexture.jpg";
-              PreviewImage = lib.mkForce "file://${
-                inputs.aerothemeplasma-nix.packages.${pkgs.system}.sddm-theme-mod
-              }}/share/sddm/themes/sddm-theme-mod/bgtexture.jpg";
-            };
-          };
-        };
-      })
+      #       [PlasmaViews][Panel 2][Defaults]
+      #       thickness=40
+      #     '';
+      #     "autostart/x-atpootb.desktop".text = ''
+      #       [Desktop Entry]
+      #       Hidden=true
+      #     '';
+      #   };
+      #   programs.plasma = {
+      #     workspace = {
+      #       wallpaper = lib.mkForce /var/lib/wallpapers/win7.jpg; TODO FIX!
+      #       theme = "Seven-Black";
+      #       lookAndFeel = "authui7";
+      #       # iconTheme = "Windows 7 Aero";
+      #       # splashScreen.theme = lib.mkForce "authui7";
+      #       # windowDecorations = {
+      #       #   theme = "SMOD";
+      #       #   library = "none";
+      #       # };
+      #     };
+      #     kwin.effects.blur.enable = lib.mkForce false;
+      #     # panels = [
+      #     #   {
+      #     #     floating = false;
+      #     #     height = 40;
+      #     #     location = "bottom";
+      #     #     widgets = [
+      #     #       "io.gitgud.wackyideas.SevenStart"
+      #     #       # "org.kde.plasma.activitypager"
+      #     #       "io.gitgud.wackyideas.seventasks" # "org.kde.plasma.icontasks"
+      #     #       "io.gitgud.wackyideas.systemtray" # "org.kde.plasma.systemtray"
+      #     #       "io.gitgud.wackyideas.digitalclocklite"
+      #     #       "io.gitgud.wackyideas.win7showdesktop"
+      #     #     ];
+      #     #   }
+      #     # ];
+      #     configFile = {
+      #       plasmaparc.Theme.name = "Seven-Black";
+      #       ksplashrc.KSplash.Theme = lib.mkForce "authui7";
+      #       kwinrc.Plugins.smodglowEnabled = lib.mkForce "";
+      #       kdeglobals = {
+      #         KDE.widgetStyle = "kvantum";
+      #         Icons.Theme = "Windows 7 Aero";
+      #         Sounds.Theme = "Windows 7";
+      #       };
+      #       kcminputrc.Mouse = {
+      #         cursorSize = lib.mkForce 32;
+      #         cursorTheme = lib.mkForce "aero-drop";
+      #       };
+      #       "plasma-io.gitgud.wackyideas.desktop-appletsrc"."Containments][2][Applets][4][Configuration][General".launchers =
+      #         "applications:dev.zed.Zed.desktop,applications:firefox-devedition.desktop";
+      #       kscreenlockerrc."Greeter/Wallpaper/org.kde.image/General" = {
+      #         Image = lib.mkForce "file://${
+      #           inputs.aerothemeplasma-nix.packages.${pkgs.system}.sddm-theme-mod
+      #         }/share/sddm/themes/sddm-theme-mod/bgtexture.jpg";
+      #         PreviewImage = lib.mkForce "file://${
+      #           inputs.aerothemeplasma-nix.packages.${pkgs.system}.sddm-theme-mod
+      #         }}/share/sddm/themes/sddm-theme-mod/bgtexture.jpg";
+      #       };
+      #     };
+      #   };
+      # })
     ]
   );
 }

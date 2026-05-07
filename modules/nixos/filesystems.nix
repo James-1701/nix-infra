@@ -284,7 +284,7 @@ in
       package = pkgs.zfs;
       forceImportAll = false;
       forceImportRoot = config.boot.zfs.forceImportAll;
-      allowHibernation = false;
+      unsafeAllowHibernation = false;
       requestEncryptionCredentials = true;
 
       # This setting ensures VMs work correctly with ZFS

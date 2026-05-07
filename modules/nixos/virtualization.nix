@@ -2,7 +2,6 @@
   modulesPath,
   lineage,
   config,
-  pkgs-stable,
   pkgs,
   lib,
   ...
@@ -12,7 +11,7 @@ let
   isQemuGuest = lineage.has.form "QEMU";
 
   # Setting the qemu package to use here makes it easy to keep consistent
-  qemu_package = pkgs-stable.qemu_full;
+  qemu_package = pkgs.qemu_full;
 in
 {
   imports = lib.optionals isQemuGuest [

@@ -57,7 +57,10 @@
           {
             home = {
               inherit (osConfig.system) stateVersion; # Uses the NixOS state version
-              homeDirectory = osConfig.users.users.${name}.home;
+              homeDirectory = "/home/${name}";
+
+              #              homeDirectory = osConfig.users.users.${name}.home;
+              username = name;
             };
 
             # Only import desktop modules for Desktop systems that dont manage configuration declaratively
