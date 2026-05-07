@@ -556,7 +556,18 @@ in
     })
 
     # Easily allows connection to MC Servers from consoles
-    (lib.mkIf (lineage.has.usage "MCXboxBroadcast") { services.mcxboxbroadcast.enable = true; })
+    (lib.mkIf (lineage.has.usage "MCXboxBroadcast") {
+      services.mcxboxbroadcast.enable = true;
+
+      environment.persistence."/nix/persist".directories = [
+        {
+          directory = "/var/lib/mcxboxbroadcast";
+          user = "mcxboxbroadcast";
+          group = "mcxboxbroadcast";
+          mode = "0750";
+        }
+      ];
+    })
 
     # Unbound is a Custom DNS resolver
     # These rules route the default minecraft bedrock servers to the server itself

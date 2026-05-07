@@ -9,7 +9,7 @@
 let
   jarFile = fetchurl {
     url = "https://github.com/MCXboxBroadcast/Broadcaster/releases/latest/download/MCXboxBroadcastStandalone.jar";
-    hash = "sha256-2WInwvL+aLnh7T5g1fek2W9ZTWCC2Zc2p3fBUZ1lOMc=";
+    hash = "sha256-iJUHdeniKeeAB7dxRq/2nh6Q9QjWXEr31m5FN6DN388=";
   };
 in
 stdenv.mkDerivation {

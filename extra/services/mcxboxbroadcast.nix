@@ -36,14 +36,5 @@ in
       home = "/var/lib/mcxboxbroadcast";
     };
     users.groups.mcxboxbroadcast = { };
-
-    environment.persistence."/persist".directories = [
-      {
-        directory = "/var/lib/mcxboxbroadcast";
-        user = "mcxboxbroadcast";
-        group = "mcxboxbroadcast";
-        mode = "0750";
-      }
-    ];
   };
 }
