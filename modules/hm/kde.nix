@@ -54,6 +54,7 @@ in
               };
               "Libinput/1267/12554/ELAN07CD:00 04F3:310A Touchpad" = {
                 ClickMethod = 2;
+                DisableWhileTyping = false;
                 NaturalScroll = true;
               };
             };
